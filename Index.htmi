@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPS ULTRA</title>
+
+<link rel="manifest" href="manifest.json">
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background: radial-gradient(circle,#000,#020024);
+  color:#0ff;
+  text-align:center;
+}
+
+/* MENU */
+#menu{
+  position:fixed;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+
+#game{ display:none; }
+
+button{
+  font-size:18px;
+  padding:10px 16px;
+  margin:5px;
+  border-radius:12px;
+  border:none;
+  background:#111;
+  color:#0ff;
+  box-shadow:0 0 10px #0ff;
+}
+
+/* hand 3D */
+#hand{
+  font-size:90px;
+  margin:20px;
+  transform:rotateY(0deg);
+  transition:0.6s;
+}
+.spin{ transform:rotateY(720deg); }
+
+</style>
+</head>
+
+<body>
+
+<div id="menu">
+  <h1>⚡ RPS ULTRA ⚡</h1>
+  <button onclick="startGame()">▶️ Start</button>
+  <button onclick="toggleSound()">🔊 เสียง</button>
+  <button onclick="installApp()">📱 ติดตั้ง</button>
+</div>
+
+<div id="game">
+  <h2 id="count">3</h2>
+  <div id="hand">❔</div>
+
+  <button onclick="pick('rock')">✊</button>
+  <button onclick="pick('paper')">✋</button>
+  <button onclick="pick('scissors')">✌️</button>
+</div>
+
+<audio id="beep" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+<audio id="boom" src="https://actions.google.com/sounds/v1/explosions/explosion.ogg"></audio>
+
+<script>
+let choice=null, ready=false, revealed=false;
+let soundOn=true;
+
+// start
+function startGame(){
+  menu.style.display="none";
+  game.style.display="block";
+  start();
+}
+
+function toggleSound(){
+  soundOn=!soundOn;
+  alert(soundOn?"🔊 เปิดเสียง":"🔇 ปิดเสียง");
+}
+
+// game loop
+function start(){
+  choice=null; ready=false; revealed=false;
+
+  let t=3;
+  const loop=setInterval(()=>{
+    count.innerText=t;
+    play("beep");
+    t--;
+
+    if(t<0){
+      clearInterval(loop);
+      count.innerText="GO!";
+      ready=true;
+    }
+  },1000);
+}
+
+function pick(c){
+  if(choice) return;
+  choice=c;
+}
+
+// 📲 เขย่าเบาๆติด
+let last=0;
+window.addEventListener("devicemotion",(e)=>{
+  if(!ready || revealed) return;
+
+  const a=e.accelerationIncludingGravity;
+  const total=Math.abs(a.x)+Math.abs(a.y)+Math.abs(a.z);
+  const now=Date.now();
+
+  if(total>10 && now-last>300){
+    last=now;
+    reveal();
+  }
+});
+
+// tap fallback
+document.body.addEventListener("click",()=>{
+  if(ready) reveal();
+});
+
+// reveal
+function reveal(){
+  if(revealed) return;
+  revealed=true;
+
+  hand.innerText=choice?emoji(choice):"❌";
+  hand.classList.add("spin");
+
+  play("boom");
+
+  setTimeout(()=>{
+    hand.classList.remove("spin");
+    start();
+  },3000);
+}
+
+function emoji(c){
+  return c==="rock"?"✊":c==="paper"?"✋":"✌️";
+}
+
+function play(id){
+  if(!soundOn) return;
+  const s=document.getElementById(id);
+  s.currentTime=0;
+  s.play();
+}
+
+// PWA install
+let deferredPrompt;
+window.addEventListener("beforeinstallprompt",(e)=>{
+  e.preventDefault();
+  deferredPrompt=e;
+});
+
+function installApp(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+  }else{
+    alert("เพิ่มไปหน้าจอหลักได้จาก browser");
+  }
+}
+
+// service worker
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js");
+}
+</script>
+
+</body>
+</html>
