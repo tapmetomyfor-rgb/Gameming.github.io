@@ -8,25 +8,15 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
 
-/* THEME */
 :root{
 --main:#0ff;
 --glow:0 0 20px #0ff;
 }
 
-/* BODY */
 body{
 background:radial-gradient(circle at top,#021018,#000);
 color:var(--main);
 height:100vh;overflow:hidden;
-}
-
-/* MONEY HUD */
-#moneyBox{
-position:absolute;
-top:10px;right:10px;
-font-size:18px;
-text-shadow:var(--glow);
 }
 
 /* SCREEN */
@@ -37,34 +27,21 @@ justify-content:center;align-items:center;
 animation:fade .4s;
 }
 .active{display:flex}
-@keyframes fade{from{opacity:0;transform:scale(.9)}to{opacity:1}}
 
-/* UI */
-.title{
-font-size:34px;
-text-shadow:var(--glow);
-margin-bottom:20px;
-}
-
+/* BUTTON */
 .btn{
-margin:12px;padding:20px 35px;
-font-size:18px;
+margin:12px;
+padding:20px 35px;
+font-size:20px;
 border:none;border-radius:25px;
 background:#000;color:var(--main);
-box-shadow:var(--glow), inset 0 0 10px var(--main);
-transition:.15s;
+box-shadow:var(--glow), inset 0 0 12px var(--main);
+width:80%;max-width:320px;
+transition:.2s;
 }
 .btn:active{transform:scale(.9)}
 
-.scroll{overflow-y:auto;width:95%;max-height:70%}
-.card{
-background:#000;border-radius:20px;
-padding:20px;margin:12px;
-display:flex;justify-content:space-between;
-align-items:center;
-box-shadow:var(--glow);
-}
-
+/* XO */
 .board{display:grid;grid-template-columns:repeat(3,110px);gap:8px}
 .cell{
 width:110px;height:110px;
@@ -73,90 +50,76 @@ font-size:40px;background:#000;
 box-shadow:var(--glow);
 }
 
-.slot{display:flex;font-size:60px}
-.reel{width:70px;height:70px;overflow:hidden}
-
-.shopItem{
-margin:10px;padding:15px;
-border-radius:15px;
-background:#000;
-box-shadow:var(--glow);
-text-align:center;
+/* SLOT */
+.slot{display:flex;gap:10px}
+.reel{
+width:70px;height:70px;
+overflow:hidden;
+font-size:40px;
+display:flex;flex-direction:column;
+align-items:center;
 }
 
-.preview{
-height:30px;margin:10px;border-radius:10px;
+/* FLASH JACKPOT */
+.flash{
+position:absolute;width:100%;height:100%;
+background:rgba(0,255,255,0.3);
+animation:flash .5s infinite alternate;
 }
+@keyframes flash{to{opacity:0}}
 
-/* EFFECT */
+/* PARTICLE */
 .particle{
-position:absolute;
-width:6px;height:6px;
+position:absolute;width:6px;height:6px;
 background:var(--main);
 border-radius:50%;
-pointer-events:none;
-animation:boom .6s linear forwards;
+animation:boom .6s forwards;
 }
 @keyframes boom{
-to{
-transform:translate(var(--x),var(--y));
-opacity:0;
+to{transform:translate(var(--x),var(--y));opacity:0}
 }
-}
+
+/* LEADERBOARD */
+#leaderboard{font-size:14px;text-align:center}
+
+/* CREDIT */
+.dev{position:absolute;bottom:10px;font-size:13px}
 </style>
 </head>
 
 <body>
 
-<div id="moneyBox">💰100</div>
-
 <!-- MAIN -->
 <div id="main" class="screen active">
-<div class="title">FINAL GOD MODE</div>
-<button class="btn" onclick="go('menu')">🎮 PLAY</button>
-<button class="btn" onclick="go('shop')">🛒 SHOP</button>
-<button class="btn" onclick="go('setting')">⚙️ SETTING</button>
-</div>
-
-<!-- SETTING -->
-<div id="setting" class="screen">
-<button class="btn" onclick="go('main')">⬅</button>
-<button class="btn" onclick="toggleSound()">🔊 SOUND</button>
-</div>
-
-<!-- SHOP -->
-<div id="shop" class="screen">
-<button class="btn" onclick="go('main')">⬅</button>
-<div id="shopList"></div>
+<h2>FINAL GOD MODE</h2>
+<button class="btn" onclick="go('menu',event)">🎮 PLAY</button>
+<button class="btn" onclick="go('rank',event)">🏆 RANK</button>
 </div>
 
 <!-- MENU -->
 <div id="menu" class="screen">
-<button class="btn" onclick="go('main')">⬅</button>
-<div class="scroll">
-<div class="card">❌⭕ XO <button class="btn" onclick="go('xo')">PLAY</button></div>
-<div class="card">🎲 RANDOM <button class="btn" onclick="go('rps')">PLAY</button></div>
-<div class="card">🎰 SLOT <button class="btn" onclick="go('slot')">PLAY</button></div>
-</div>
+<button class="btn" onclick="go('main',event)">⬅</button>
+<button class="btn" onclick="go('xo',event)">❌⭕ XO</button>
+<button class="btn" onclick="go('slot',event)">🎰 SLOT</button>
 </div>
 
 <!-- XO -->
 <div id="xo" class="screen">
-<button class="btn" onclick="go('menu')">⬅</button>
-<div id="board" class="board"></div>
-</div>
+<button class="btn" onclick="go('menu',event)">⬅</button>
 
-<!-- RPS -->
-<div id="rps" class="screen">
-<button class="btn" onclick="go('menu')">⬅</button>
-<div class="title">🎲 เขย่า</div>
-<button class="btn" onclick="shake()">เขย่า</button>
-<div id="rpsText"></div>
+<select id="mode" class="btn">
+<option value="easy">ง่าย</option>
+<option value="normal">ปกติ</option>
+<option value="hard">เทพ</option>
+</select>
+
+<div id="board" class="board"></div>
+<button class="btn" onclick="reset()">🔄 รีแมตช์</button>
 </div>
 
 <!-- SLOT -->
 <div id="slot" class="screen">
-<button class="btn" onclick="go('menu')">⬅</button>
+<button class="btn" onclick="go('menu',event)">⬅</button>
 <div class="slot">
 <div id="r1" class="reel"></div>
 <div id="r2" class="reel"></div>
@@ -165,100 +128,32 @@ opacity:0;
 <button class="btn" onclick="spin()">SPIN</button>
 </div>
 
+<!-- RANK -->
+<div id="rank" class="screen">
+<button class="btn" onclick="go('main',event)">⬅</button>
+<h3>🏆 Leaderboard</h3>
+<div id="leaderboard"></div>
+</div>
+
+<div class="dev">พัฒนาโดย meth._15</div>
+
 <script>
 
 /* DATA */
 let data=JSON.parse(localStorage.data||"null")||{
-money:100,
-theme:"cyan",
-owned:["cyan"],
-sound:true
+score:0
 }
-
-/* THEMES */
-const themes={
-cyan:{color:"#0ff",glow:"0 0 20px #0ff"},
-red:{color:"#ff4444",glow:"0 0 20px #ff4444"},
-lime:{color:"#00ff88",glow:"0 0 20px #00ff88"}
-}
-
-/* APPLY THEME */
-function applyTheme(){
-let t=themes[data.theme]
-document.documentElement.style.setProperty('--main',t.color)
-document.documentElement.style.setProperty('--glow',t.glow)
-}
-applyTheme()
 
 /* SAVE */
-function save(){
-localStorage.data=JSON.stringify(data)
-updateMoney()
-}
+function save(){localStorage.data=JSON.stringify(data)}
 
-/* MONEY UI */
-function updateMoney(){
-moneyBox.innerText="💰"+data.money
-}
-updateMoney()
-
-/* SOUND */
-function sound(){
-if(!data.sound)return
-let ctx=new AudioContext()
-let o=ctx.createOscillator()
-o.frequency.value=500
-o.connect(ctx.destination)
-o.start()
-o.stop(ctx.currentTime+0.1)
-}
-
-/* NAV */
-function go(id){
-sound()
-document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"))
-document.getElementById(id).classList.add("active")
-renderShop()
-}
-
-/* SHOP */
-function renderShop(){
-shopList.innerHTML=""
-for(let k in themes){
-
-let owned=data.owned.includes(k)
-
-let div=document.createElement("div")
-div.className="shopItem"
-
-div.innerHTML=`
-<div>${k.toUpperCase()}</div>
-<div class="preview" style="background:${themes[k].color}"></div>
-<button class="btn" onclick="preview('${k}')">PREVIEW</button>
-<button class="btn" onclick="buy('${k}')">
-${owned?"USE":"BUY 50"}
-</button>
-`
-
-shopList.appendChild(div)
-}
-}
-
-/* PREVIEW */
-function preview(k){
-sound()
-let t=themes[k]
-document.documentElement.style.setProperty('--main',t.color)
-document.documentElement.style.setProperty('--glow',t.glow)
-}
-
-/* PARTICLE EFFECT */
-function boom(){
+/* PARTICLE */
+function boom(x,y){
 for(let i=0;i<20;i++){
 let p=document.createElement("div")
 p.className="particle"
-p.style.left=innerWidth/2+"px"
-p.style.top=innerHeight/2+"px"
+p.style.left=x+"px"
+p.style.top=y+"px"
 p.style.setProperty('--x',(Math.random()*200-100)+"px")
 p.style.setProperty('--y',(Math.random()*200-100)+"px")
 document.body.appendChild(p)
@@ -266,64 +161,86 @@ setTimeout(()=>p.remove(),600)
 }
 }
 
-/* BUY */
-function buy(k){
-sound()
-
-if(!data.owned.includes(k)){
-if(data.money<50)return alert("เงินไม่พอ")
-data.money-=50
-data.owned.push(k)
-boom()
+/* SOUND */
+function playBeep(){
+let ctx=new AudioContext()
+let o=ctx.createOscillator()
+o.connect(ctx.destination)
+o.start()
+o.stop(ctx.currentTime+0.1)
 }
 
-data.theme=k
-applyTheme()
-save()
+/* NAV */
+function go(id,e){
+if(e){boom(e.clientX,e.clientY);playBeep();navigator.vibrate?.(50)}
+document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"))
+document.getElementById(id).classList.add("active")
+if(id=="rank")updateRank()
 }
 
 /* XO */
 let b=["","","","","","","","",""]
+
 function draw(){
 board.innerHTML=""
 b.forEach((v,i)=>{
 let c=document.createElement("div")
 c.className="cell"
 c.innerText=v
-c.onclick=()=>{
-sound()
+c.onclick=(e)=>{
+boom(e.clientX,e.clientY);playBeep()
 if(b[i])return
 b[i]="X"
-if(win("X"))return alert("ชนะ")
+if(win("X")){end(true);return}
 ai()
-if(win("O"))return alert("แพ้")
+if(win("O")){end(false);return}
 draw()
 }
 board.appendChild(c)
 })
 }
+
 function ai(){
+let m=mode.value
+if(m=="easy"){
+let e=b.map((v,i)=>v==""?i:null).filter(v=>v!=null)
+b[e[Math.random()*e.length|0]]="O"
+}
+else if(m=="normal"){
+if(Math.random()<0.5){aiRandom()}else aiHard()
+}
+else aiHard()
+}
+
+function aiRandom(){
+let e=b.map((v,i)=>v==""?i:null).filter(v=>v!=null)
+b[e[Math.random()*e.length|0]]="O"
+}
+
+function aiHard(){
 let best=-Infinity,move
 for(let i=0;i<9;i++){
 if(!b[i]){
 b[i]="O"
-let s=minimax(b,false)
+let score=minimax(b,0,false)
 b[i]=""
-if(s>best){best=s;move=i}
+if(score>best){best=score;move=i}
 }
 }
 b[move]="O"
 }
-function minimax(board,isMax){
-if(win("O"))return 1
-if(win("X"))return -1
+
+function minimax(board,depth,isMax){
+if(win("O"))return 10-depth
+if(win("X"))return depth-10
 if(board.every(v=>v))return 0
+
 if(isMax){
 let best=-Infinity
 for(let i=0;i<9;i++){
 if(!board[i]){
 board[i]="O"
-best=Math.max(best,minimax(board,false))
+best=Math.max(best,minimax(board,depth+1,false))
 board[i]=""
 }
 }
@@ -333,51 +250,74 @@ let best=Infinity
 for(let i=0;i<9;i++){
 if(!board[i]){
 board[i]="X"
-best=Math.min(best,minimax(board,true))
+best=Math.min(best,minimax(board,depth+1,true))
 board[i]=""
 }
 }
 return best
 }
 }
+
 function win(p){
 return [[0,1,2],[3,4,5],[6,7,8],[0,4,8],[2,4,6]]
 .some(w=>w.every(i=>b[i]==p))
 }
-draw()
 
-/* RANDOM */
-function shake(){
-sound()
-let arr=["ชนะ","แพ้","เสมอ"]
-rpsText.innerText=arr[Math.random()*3|0]
+function end(winState){
+if(winState){alert("ชนะ");data.score+=10}
+else{alert("แพ้");data.score-=5}
+save()
+reset()
 }
+
+function reset(){b=["","","","","","","","",""];draw()}
+draw()
 
 /* SLOT */
 let icons=["🍒","🍋","⭐","💎"]
+
 function spin(){
-sound()
+playBeep()
 spinReel(r1)
 spinReel(r2)
 spinReel(r3)
+
+setTimeout(()=>{
+let a=r1.lastChild.innerText
+let b=r2.lastChild.innerText
+let c=r3.lastChild.innerText
+
+if(a==b&&b==c){
+data.score+=50
+save()
+
+let f=document.createElement("div")
+f.className="flash"
+document.body.appendChild(f)
+
+setTimeout(()=>f.remove(),1000)
+
+alert("💎 JACKPOT!")
 }
+},900)
+}
+
 function spinReel(el){
 el.innerHTML=""
 let i=0
 let int=setInterval(()=>{
-let span=document.createElement("div")
-span.innerText=icons[Math.random()*4|0]
-el.appendChild(span)
+let d=document.createElement("div")
+d.innerText=icons[Math.random()*4|0]
+el.appendChild(d)
 if(el.children.length>3)el.removeChild(el.firstChild)
 i++
-if(i>15)clearInterval(int)
+if(i>20)clearInterval(int)
 },50)
 }
 
-/* SOUND TOGGLE */
-function toggleSound(){
-data.sound=!data.sound
-save()
+/* RANK */
+function updateRank(){
+leaderboard.innerHTML="คะแนนของคุณ: "+data.score
 }
 
 </script>
