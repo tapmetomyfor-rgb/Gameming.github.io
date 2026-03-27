@@ -8,6 +8,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
 
+/* THEME */
 :root{
 --main:#0ff;
 --glow:0 0 20px #0ff;
@@ -20,9 +21,13 @@ color:var(--main);
 height:100vh;overflow:hidden;
 }
 
-/* HUD */
-#moneyBox{position:absolute;top:10px;right:10px}
-#levelBox{position:absolute;top:10px;left:10px}
+/* MONEY HUD */
+#moneyBox{
+position:absolute;
+top:10px;right:10px;
+font-size:18px;
+text-shadow:var(--glow);
+}
 
 /* SCREEN */
 .screen{
@@ -34,86 +39,89 @@ animation:fade .4s;
 .active{display:flex}
 @keyframes fade{from{opacity:0;transform:scale(.9)}to{opacity:1}}
 
-/* BUTTON BIG */
+/* UI */
+.title{
+font-size:34px;
+text-shadow:var(--glow);
+margin-bottom:20px;
+}
+
 .btn{
-margin:14px;
-padding:22px 38px;
-font-size:20px;
+margin:12px;padding:20px 35px;
+font-size:18px;
 border:none;border-radius:25px;
 background:#000;color:var(--main);
-box-shadow:var(--glow), inset 0 0 12px var(--main);
-width:80%;max-width:320px;
+box-shadow:var(--glow), inset 0 0 10px var(--main);
+transition:.15s;
 }
-.btn:active{transform:scale(.92)}
+.btn:active{transform:scale(.9)}
 
-/* MENU */
 .scroll{overflow-y:auto;width:95%;max-height:70%}
 .card{
-background:#000;padding:15px;margin:10px;
-border-radius:15px;box-shadow:var(--glow);
+background:#000;border-radius:20px;
+padding:20px;margin:12px;
 display:flex;justify-content:space-between;
 align-items:center;
-}
-
-/* XO */
-.board{display:grid;grid-template-columns:repeat(3,120px);gap:8px}
-.cell{
-width:120px;height:120px;
-display:flex;justify-content:center;align-items:center;
-font-size:45px;background:#000;
 box-shadow:var(--glow);
 }
 
-/* SLOT */
-.slot{display:flex;font-size:55px}
+.board{display:grid;grid-template-columns:repeat(3,110px);gap:8px}
+.cell{
+width:110px;height:110px;
+display:flex;justify-content:center;align-items:center;
+font-size:40px;background:#000;
+box-shadow:var(--glow);
+}
+
+.slot{display:flex;font-size:60px}
 .reel{width:70px;height:70px;overflow:hidden}
 
-/* SHOP */
 .shopItem{
 margin:10px;padding:15px;
-background:#000;border-radius:15px;
-box-shadow:var(--glow);text-align:center;
+border-radius:15px;
+background:#000;
+box-shadow:var(--glow);
+text-align:center;
+}
+
+.preview{
+height:30px;margin:10px;border-radius:10px;
 }
 
 /* EFFECT */
-.flash{
-position:absolute;width:100%;height:100%;
-background:rgba(0,255,255,0.2);
-animation:flash .5s;
-}
-@keyframes flash{to{opacity:0}}
-
 .particle{
-position:absolute;width:6px;height:6px;
+position:absolute;
+width:6px;height:6px;
 background:var(--main);
 border-radius:50%;
-animation:boom .6s forwards;
+pointer-events:none;
+animation:boom .6s linear forwards;
 }
 @keyframes boom{
-to{transform:translate(var(--x),var(--y));opacity:0}
+to{
+transform:translate(var(--x),var(--y));
+opacity:0;
 }
-
-/* CREDIT */
-.dev{
-position:absolute;
-bottom:10px;
-font-size:13px;
-text-shadow:var(--glow);
 }
-.dev a{color:var(--main);text-decoration:none}
 </style>
 </head>
 
 <body>
 
 <div id="moneyBox">💰100</div>
-<div id="levelBox">Lv.1</div>
 
 <!-- MAIN -->
 <div id="main" class="screen active">
 <div class="title">FINAL GOD MODE</div>
 <button class="btn" onclick="go('menu')">🎮 PLAY</button>
 <button class="btn" onclick="go('shop')">🛒 SHOP</button>
+<button class="btn" onclick="go('setting')">⚙️ SETTING</button>
+</div>
+
+<!-- SETTING -->
+<div id="setting" class="screen">
+<button class="btn" onclick="go('main')">⬅</button>
+<button class="btn" onclick="toggleSound()">🔊 SOUND</button>
 </div>
 
 <!-- SHOP -->
@@ -127,7 +135,7 @@ text-shadow:var(--glow);
 <button class="btn" onclick="go('main')">⬅</button>
 <div class="scroll">
 <div class="card">❌⭕ XO <button class="btn" onclick="go('xo')">PLAY</button></div>
-<div class="card">✊✌️✋ RPS <button class="btn" onclick="go('rps')">PLAY</button></div>
+<div class="card">🎲 RANDOM <button class="btn" onclick="go('rps')">PLAY</button></div>
 <div class="card">🎰 SLOT <button class="btn" onclick="go('slot')">PLAY</button></div>
 </div>
 </div>
@@ -141,9 +149,8 @@ text-shadow:var(--glow);
 <!-- RPS -->
 <div id="rps" class="screen">
 <button class="btn" onclick="go('menu')">⬅</button>
-<button class="btn" onclick="rps('rock')">✊</button>
-<button class="btn" onclick="rps('paper')">✋</button>
-<button class="btn" onclick="rps('scissor')">✌️</button>
+<div class="title">🎲 เขย่า</div>
+<button class="btn" onclick="shake()">เขย่า</button>
 <div id="rpsText"></div>
 </div>
 
@@ -158,46 +165,49 @@ text-shadow:var(--glow);
 <button class="btn" onclick="spin()">SPIN</button>
 </div>
 
-<!-- CREDIT -->
-<div class="dev">
-พัฒนาโดย 
-<a href="https://www.instagram.com/meth._15" target="_blank">
-meth._15
-</a>
-</div>
-
 <script>
 
 /* DATA */
 let data=JSON.parse(localStorage.data||"null")||{
-money:100,xp:0,level:1,
-theme:"cyan",owned:["cyan"],
+money:100,
+theme:"cyan",
+owned:["cyan"],
 sound:true
 }
+
+/* THEMES */
+const themes={
+cyan:{color:"#0ff",glow:"0 0 20px #0ff"},
+red:{color:"#ff4444",glow:"0 0 20px #ff4444"},
+lime:{color:"#00ff88",glow:"0 0 20px #00ff88"}
+}
+
+/* APPLY THEME */
+function applyTheme(){
+let t=themes[data.theme]
+document.documentElement.style.setProperty('--main',t.color)
+document.documentElement.style.setProperty('--glow',t.glow)
+}
+applyTheme()
 
 /* SAVE */
 function save(){
 localStorage.data=JSON.stringify(data)
-updateUI()
+updateMoney()
 }
 
-/* UI */
-function updateUI(){
+/* MONEY UI */
+function updateMoney(){
 moneyBox.innerText="💰"+data.money
-data.level=Math.floor(data.xp/100)+1
-levelBox.innerText="Lv."+data.level
 }
-
-/* XP */
-function gainXP(v){
-data.xp+=v
-}
+updateMoney()
 
 /* SOUND */
 function sound(){
 if(!data.sound)return
 let ctx=new AudioContext()
 let o=ctx.createOscillator()
+o.frequency.value=500
 o.connect(ctx.destination)
 o.start()
 o.stop(ctx.currentTime+0.1)
@@ -212,39 +222,39 @@ renderShop()
 }
 
 /* SHOP */
-const themes={cyan:"#0ff",red:"#f44",lime:"#0f8"}
-
 function renderShop(){
 shopList.innerHTML=""
 for(let k in themes){
+
 let owned=data.owned.includes(k)
+
 let div=document.createElement("div")
 div.className="shopItem"
 
 div.innerHTML=`
-<button class="btn" onclick="buyTheme('${k}')">
-${k} ${owned?"(ใช้)":"50$"}
+<div>${k.toUpperCase()}</div>
+<div class="preview" style="background:${themes[k].color}"></div>
+<button class="btn" onclick="preview('${k}')">PREVIEW</button>
+<button class="btn" onclick="buy('${k}')">
+${owned?"USE":"BUY 50"}
 </button>
 `
+
 shopList.appendChild(div)
 }
 }
 
-function buyTheme(k){
-if(!data.owned.includes(k)){
-if(data.money<50)return alert("เงินไม่พอ")
-data.money-=50
-data.owned.push(k)
-boom()
-}
-data.theme=k
-document.documentElement.style.setProperty('--main',themes[k])
-save()
+/* PREVIEW */
+function preview(k){
+sound()
+let t=themes[k]
+document.documentElement.style.setProperty('--main',t.color)
+document.documentElement.style.setProperty('--glow',t.glow)
 }
 
-/* EFFECT */
+/* PARTICLE EFFECT */
 function boom(){
-for(let i=0;i<25;i++){
+for(let i=0;i<20;i++){
 let p=document.createElement("div")
 p.className="particle"
 p.style.left=innerWidth/2+"px"
@@ -256,9 +266,24 @@ setTimeout(()=>p.remove(),600)
 }
 }
 
-/* XO AI */
-let b=["","","","","","","","",""]
+/* BUY */
+function buy(k){
+sound()
 
+if(!data.owned.includes(k)){
+if(data.money<50)return alert("เงินไม่พอ")
+data.money-=50
+data.owned.push(k)
+boom()
+}
+
+data.theme=k
+applyTheme()
+save()
+}
+
+/* XO */
+let b=["","","","","","","","",""]
 function draw(){
 board.innerHTML=""
 b.forEach((v,i)=>{
@@ -266,41 +291,39 @@ let c=document.createElement("div")
 c.className="cell"
 c.innerText=v
 c.onclick=()=>{
+sound()
 if(b[i])return
 b[i]="X"
-if(win("X")){alert("ชนะ");gainXP(20);reset()}
+if(win("X"))return alert("ชนะ")
 ai()
-if(win("O")){alert("แพ้");reset()}
+if(win("O"))return alert("แพ้")
 draw()
 }
 board.appendChild(c)
 })
 }
-
 function ai(){
 let best=-Infinity,move
 for(let i=0;i<9;i++){
 if(!b[i]){
 b[i]="O"
-let s=minimax(b,0,false)
+let s=minimax(b,false)
 b[i]=""
 if(s>best){best=s;move=i}
 }
 }
 b[move]="O"
 }
-
-function minimax(board,depth,isMax){
-if(win("O"))return 10-depth
-if(win("X"))return depth-10
+function minimax(board,isMax){
+if(win("O"))return 1
+if(win("X"))return -1
 if(board.every(v=>v))return 0
-
 if(isMax){
 let best=-Infinity
 for(let i=0;i<9;i++){
 if(!board[i]){
 board[i]="O"
-best=Math.max(best,minimax(board,depth+1,false))
+best=Math.max(best,minimax(board,false))
 board[i]=""
 }
 }
@@ -310,81 +333,52 @@ let best=Infinity
 for(let i=0;i<9;i++){
 if(!board[i]){
 board[i]="X"
-best=Math.min(best,minimax(board,depth+1,true))
+best=Math.min(best,minimax(board,true))
 board[i]=""
 }
 }
 return best
 }
 }
-
 function win(p){
 return [[0,1,2],[3,4,5],[6,7,8],[0,4,8],[2,4,6]]
 .some(w=>w.every(i=>b[i]==p))
 }
-
-function reset(){b=["","","","","","","","",""]}
 draw()
 
-/* RPS */
-function rps(p){
-let arr=["rock","paper","scissor"]
-let ai=arr[Math.random()*3|0]
-
-if(p==ai)return
-if((p=="rock"&&ai=="scissor")||(p=="paper"&&ai=="rock")||(p=="scissor"&&ai=="paper")){
-data.money+=10;gainXP(10)
-}else data.money-=5
-
-save()
+/* RANDOM */
+function shake(){
+sound()
+let arr=["ชนะ","แพ้","เสมอ"]
+rpsText.innerText=arr[Math.random()*3|0]
 }
 
 /* SLOT */
 let icons=["🍒","🍋","⭐","💎"]
-
 function spin(){
-if(data.money<5)return
-data.money-=5
-
+sound()
 spinReel(r1)
 spinReel(r2)
 spinReel(r3)
-
-setTimeout(()=>{
-let a=r1.lastChild.innerText
-let b=r2.lastChild.innerText
-let c=r3.lastChild.innerText
-
-if(a==b&&b==c){
-data.money+=100
-gainXP(50)
-
-let f=document.createElement("div")
-f.className="flash"
-document.body.appendChild(f)
-setTimeout(()=>f.remove(),500)
-
-alert("💎 JACKPOT!")
 }
-
-save()
-},800)
-}
-
 function spinReel(el){
 el.innerHTML=""
 let i=0
 let int=setInterval(()=>{
-let d=document.createElement("div")
-d.innerText=icons[Math.random()*4|0]
-el.appendChild(d)
+let span=document.createElement("div")
+span.innerText=icons[Math.random()*4|0]
+el.appendChild(span)
 if(el.children.length>3)el.removeChild(el.firstChild)
 i++
 if(i>15)clearInterval(int)
 },50)
 }
 
-updateUI()
+/* SOUND TOGGLE */
+function toggleSound(){
+data.sound=!data.sound
+save()
+}
 
 </script>
 
